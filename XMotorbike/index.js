@@ -32,22 +32,34 @@ let player = new function(){
         let p2 = c.height - noise(t + 5 + this.x) * 0.25;
         
         let grounded = 0;
-        if(p1 -15 > this.y){
+        if(p1 - 15 > this.y){
             this.ySpeed += 0.1;         //gravity
         }else{
-            this.y = p1 - 15;           // moving on the ground- stop gravity
+            
             //this.ySpeed = 0;          // free fall
             this.ySpeed -= this.y - (p1-15); // reflection effect,  wheel traction
+            this.y = p1 - 15;           // moving on the ground- stop gravity
             grounded = 1;
         }
+
+        if(!playing || grounded && Math.abs(this.rot) > Math.PI * 0.5){
+            playing =false;
+            this.rSpeed = 5;
+            k.ArrowUp = 1;
+            this.x -= speed * 5;
+        }
+        
         let angle = Math.atan2((p2-15) - this.y, (this.x +5) - this.x);  //atan2 -> 2-argument arctangent in radians
         this.y += this.ySpeed;          //falling
         
-        if(grounded){
+        if(grounded && playing){
             this.rot -= (this.rot - angle) * 0.5;
             this.rSpeed = this. rSpeed - (angle - this.rot);
         }
+        this.rSpeed += (k.ArrowLeft - k.ArrowRigth) * 0.05;   //to CORRECT
         this.rot -= this.rSpeed * 0.1;
+        if(this.rot > Math.PI) this.rot = -Math.PI;
+        if(this.rot < -Math.PI) this.rot = Math.PI;
         ctx.save();
         ctx.translate(this.x, this.y);
         ctx.rotate(this.rot);
@@ -57,17 +69,18 @@ let player = new function(){
 } 
 
 let t = 0;
-let speed =0;
+let speed = 0;
+let playing = true;
 let k = {ArrowUp:0, ArrowDown:0, ArrowLeft:0, ArrowRigth:0};
 function loop(){
-    speed += (k.ArrowUp - k.ArrowDown) * 0.01;
-    t += 5 * speed;             //time
+    speed -= (speed - (k.ArrowUp - k.ArrowDown)) * 0.01;
+    t += 10 * speed;             //time
     ctx.fillStyle = "#19f";     
     ctx.fillRect(0, 0, c.width, c.height); // drawing frame
 
     ctx.fillStyle = "black";
     ctx.beginPath();
-   ctx.moveTo(0, c.height);
+    ctx.moveTo(0, c.height);
     for (let i = 0; i <  c.width; i++){
         ctx.lineTo(i, c.height - noise(t + i) * 0.25);
     }
@@ -76,7 +89,7 @@ function loop(){
     ctx.fill();
     player.draw();
     requestAnimationFrame(loop);
-} 
+ } 
 onkeydown = d => k[d.key] = 1;
 onkeyup = d => k[d.key] = 0;
 
