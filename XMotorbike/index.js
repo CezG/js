@@ -1,8 +1,8 @@
 
 let c = document.createElement("canvas");
 let ctx = c.getContext("2d");
-c.width = 500;
-c.height = 350;
+c.width = 800;
+c.height = 500;
 document.body.appendChild(c);
 
 let perm = [];
@@ -56,7 +56,7 @@ let player = new function(){
             this.rot -= (this.rot - angle) * 0.5;
             this.rSpeed = this. rSpeed - (angle - this.rot);
         }
-        this.rSpeed += (k.ArrowLeft - k.ArrowRigth) * 0.05;   //to CORRECT
+        this.rSpeed += (k.ArrowLeft - k.ArrowRight) * 0.05;   //to CORRECT
         this.rot -= this.rSpeed * 0.1;
         if(this.rot > Math.PI) this.rot = -Math.PI;
         if(this.rot < -Math.PI) this.rot = Math.PI;
@@ -71,7 +71,7 @@ let player = new function(){
 let t = 0;
 let speed = 0;
 let playing = true;
-let k = {ArrowUp:0, ArrowDown:0, ArrowLeft:0, ArrowRigth:0};
+let k = {ArrowUp:0, ArrowDown:0, ArrowLeft:0, ArrowRight:0};
 function loop(){
     speed -= (speed - (k.ArrowUp - k.ArrowDown)) * 0.01;
     t += 10 * speed;             //time
