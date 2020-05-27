@@ -57,8 +57,11 @@ let player = new function(){
 } 
 
 let t = 0;
+let speed =0;
+let k = {ArrowUp:0, ArrowDown:0, ArrowLeft:0, ArrowRigth:0};
 function loop(){
-    t += 5;             //time
+    speed += (k.ArrowUp - k.ArrowDown) * 0.01;
+    t += 5 * speed;             //time
     ctx.fillStyle = "#19f";     
     ctx.fillRect(0, 0, c.width, c.height); // drawing frame
 
@@ -74,5 +77,7 @@ function loop(){
     player.draw();
     requestAnimationFrame(loop);
 } 
+onkeydown = d => k[d.key] = 1;
+onkeyup = d => k[d.key] = 0;
 
 loop();
