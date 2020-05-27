@@ -1,5 +1,5 @@
 let canvas = document.createElement("canvas");
-let context = c.getContext("2d");
+let context = canvas.getContext("2d");
 canvas.width = 500;
 canvas.height = 350;
 
