@@ -35,8 +35,7 @@ let player = new function(){
         if(p1 - 15 > this.y){
             this.ySpeed += 0.1;         //gravity
         }else{
-            //this.ySpeed = 0;          // free fall
-            this.ySpeed -= this.y - (p1-14.7); // reflection effect,  wheel traction //was 14.4  
+           this.ySpeed -= this.y - (p1-14.7); // reflection effect,  wheel traction, ski jump effect
             this.y = p1 - 15;           // moving on the ground- stop gravity
             grounded = 1;
         }
@@ -45,20 +44,19 @@ let player = new function(){
             playing =false;
             this.rSpeed = 5;
             k.ArrowUp = 0;
-            speed = 0;
-            //this.x -= speed * 5;
-            
+            speed = 0;    
         }
         
         let angle = Math.atan2((p2-15) - this.y, (this.x +5) - this.x);  //atan2 -> 2-argument arctangent in radians
         this.y += this.ySpeed;          //falling
         
         if(grounded && playing){
-            this.rot -= (this.rot - angle) * 0.5;
-            this.rSpeed = this. rSpeed - (angle - this.rot);
+            this.rot -= (this.rot - angle) * 0.5;           //angle of the player moving on the ground
+            //this.rSpeed = this. rSpeed - (angle - this.rot);
+            this.rSpeed = 0;                    //better for playing
         }
         this.rSpeed += (k.ArrowLeft - k.ArrowRight) * 0.06;     // left and right rotation
-        this.rot -= this.rSpeed * 0.05;                        //was 0.1
+        this.rot -= this.rSpeed * 0.05;                        
         if(this.rot > Math.PI) this.rot = -Math.PI;
         if(this.rot < -Math.PI) this.rot = Math.PI;
         ctx.save();
@@ -75,7 +73,7 @@ let playing = true;
 let k = {ArrowUp:0, ArrowDown:0, ArrowLeft:0, ArrowRight:0};
 function loop(){
     speed -= (speed - (k.ArrowUp - k.ArrowDown)) * 0.01;
-    t += 7 * speed;             //time   //was 10
+    t += 7 * speed;             //time   
     ctx.fillStyle = "#19f";     
     ctx.fillRect(0, 0, c.width, c.height); // drawing frame
    
@@ -97,7 +95,7 @@ function loop(){
     player.draw();
     requestAnimationFrame(loop);
 } 
-onkeydown = d => k[d.key] = 0.7;        // was 1
+onkeydown = d => k[d.key] = 0.7;        
 onkeyup = d => k[d.key] = 0;
 
 loop();
