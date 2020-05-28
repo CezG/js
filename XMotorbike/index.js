@@ -20,7 +20,7 @@ let noise = x =>{
 
 let player = new function(){
     this.x = c.width/2;
-    this.y = 0;
+    this.y = c.height/1.3;
     this.ySpeed = 0;        //gravity
     this.rot = 0;
     this.rSpeed = 0;
@@ -36,7 +36,7 @@ let player = new function(){
             this.ySpeed += 0.1;         //gravity
         }else{
             //this.ySpeed = 0;          // free fall
-            this.ySpeed -= this.y - (p1-14.1); // reflection effect,  wheel traction //was 14.4  
+            this.ySpeed -= this.y - (p1-14.7); // reflection effect,  wheel traction //was 14.4  
             this.y = p1 - 15;           // moving on the ground- stop gravity
             grounded = 1;
         }
@@ -97,7 +97,7 @@ function loop(){
     player.draw();
     requestAnimationFrame(loop);
 } 
-onkeydown = d => k[d.key] = 1;
+onkeydown = d => k[d.key] = 0.7;        // was 1
 onkeyup = d => k[d.key] = 0;
 
 loop();
