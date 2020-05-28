@@ -1,3 +1,12 @@
+// add renew player from place where player creshed
+// add flag of start
+// add flag of finish
+//need to add turbo
+// turbo for full rotation above the ground
+// need to see meters to finish or time
+//add best time score
+//add start on the ground
+
 
 let c = document.createElement("canvas");
 let ctx = c.getContext("2d");
@@ -11,7 +20,7 @@ while (perm.length < 255){
     perm.push(val); 
 }
 
-let lerp = (a,b,t) => a+(b-a) * (1-Math.cos(t*Math.PI))/2;
+let lerp = (a,b,t) => a+(b-a) * (1-Math.cos(t*Math.PI))/2;      //antialiasing
 
 let noise = x =>{                                
     x = x * 0.01 % 255;
@@ -24,6 +33,7 @@ let player = new function(){
     this.ySpeed = 0;        //gravity
     this.rot = 0;
     this.rSpeed = 0;
+    this.turboScore = 0;
 
     this.img = new Image();
     this.img.src = "motorbike_racing.png";
@@ -57,9 +67,14 @@ let player = new function(){
         }
         this.rSpeed += (k.ArrowLeft - k.ArrowRight) * 0.06;     // left and right rotation
         this.rot -= this.rSpeed * 0.05;                        
-        if(this.rot > Math.PI) this.rot = -Math.PI;
-        if(this.rot < -Math.PI) this.rot = Math.PI;
+        if((this.rot > Math.PI) && playing) {
+            this.rot = -Math.PI;
+            this.turboScore++}       //landing after forward rotation
+        if((this.rot < -Math.PI) && playing) {
+            this.rot = Math.PI; 
+            this.turboScore++}        //landing after backward rotation
         ctx.save();
+        ctx.strokeText(this.turboScore,15,160); 
         ctx.translate(this.x, this.y);
         ctx.rotate(this.rot);
         ctx.drawImage(this.img, -15, -15, 30 , 30);
@@ -81,7 +96,6 @@ function loop(){
     ctx.font = "50pt Calibri";          
     ctx.fillStyle = "gray";            
     ctx.fillText("XMotorbike",15,100);  
-    //ctx.strokeText("JavaScript",15,160); 
 
     ctx.fillStyle = "#7b441d";          // ground color
     ctx.beginPath();
