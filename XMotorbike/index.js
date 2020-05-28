@@ -7,7 +7,7 @@ document.body.appendChild(c);
 
 let perm = [];
 while (perm.length < 255){
-    while(perm.includes(val = Math.floor(Math.random()*255)));    // drawing random ground
+    while(perm.includes(val = 2.2*Math.floor(Math.random()*255)));    // drawing random ground, can manipulate hight of the ground
     perm.push(val); 
 }
 
@@ -36,7 +36,7 @@ let player = new function(){
             this.ySpeed += 0.1;         //gravity
         }else{
             //this.ySpeed = 0;          // free fall
-            this.ySpeed -= this.y - (p1-16); // reflection effect,  wheel traction  // was 14.4
+            this.ySpeed -= this.y - (p1-14.1); // reflection effect,  wheel traction //was 14.4  
             this.y = p1 - 15;           // moving on the ground- stop gravity
             grounded = 1;
         }
@@ -57,8 +57,8 @@ let player = new function(){
             this.rot -= (this.rot - angle) * 0.5;
             this.rSpeed = this. rSpeed - (angle - this.rot);
         }
-        this.rSpeed += (k.ArrowLeft - k.ArrowRight) * 0.04;   // left and right rotation
-        this.rot -= this.rSpeed * 0.1;
+        this.rSpeed += (k.ArrowLeft - k.ArrowRight) * 0.06;     // left and right rotation
+        this.rot -= this.rSpeed * 0.05;                        //was 0.1
         if(this.rot > Math.PI) this.rot = -Math.PI;
         if(this.rot < -Math.PI) this.rot = Math.PI;
         ctx.save();
