@@ -20,7 +20,7 @@ let noise = x =>{
 
 let player = new function(){
     this.x = c.width/2;
-    this.y = c.height/1.3;
+    this.y =c.height - noise(this.x)*0.5;
     this.ySpeed = 0;        //gravity
     this.rot = 0;
     this.rSpeed = 0;
@@ -33,10 +33,10 @@ let player = new function(){
         
         let grounded = 0;
         if(p1 - 15 > this.y){
-            this.ySpeed += 0.1;         //gravity
+            this.ySpeed += 0.1;                 //gravity
         }else{
-           this.ySpeed -= this.y - (p1-14.7); // reflection effect,  wheel traction, ski jump effect
-            this.y = p1 - 15;           // moving on the ground- stop gravity
+           this.ySpeed -= this.y - (p1-14.7);   // reflection effect,  wheel traction, ski jump effect
+            this.y = p1 - 15;                   // moving on the ground- stop gravity
             grounded = 1;
         }
 
@@ -48,12 +48,12 @@ let player = new function(){
         }
         
         let angle = Math.atan2((p2-15) - this.y, (this.x +5) - this.x);  //atan2 -> 2-argument arctangent in radians
-        this.y += this.ySpeed;          //falling
+        this.y += this.ySpeed;                      //falling
         
         if(grounded && playing){
-            this.rot -= (this.rot - angle) * 0.5;           //angle of the player moving on the ground
+            this.rot -= (this.rot - angle) * 0.5;   //angle of the player moving on the ground
             //this.rSpeed = this. rSpeed - (angle - this.rot);
-            this.rSpeed = 0;                    //better for playing
+            this.rSpeed = 0;                        //better for playing
         }
         this.rSpeed += (k.ArrowLeft - k.ArrowRight) * 0.06;     // left and right rotation
         this.rot -= this.rSpeed * 0.05;                        
@@ -78,12 +78,12 @@ function loop(){
     ctx.fillRect(0, 0, c.width, c.height); // drawing frame
    
     
-    ctx.font = "50pt Calibri"; // styl tekstu
-    ctx.fillStyle = "gray"; // ustawienie koloru tekstu
-    ctx.fillText("JavaScript",15,100); // narysowanie tekstu
-    //ctx.strokeText("JavaScript",15,160); // wyświetlenie tekstu
+    ctx.font = "50pt Calibri";          
+    ctx.fillStyle = "gray";            
+    ctx.fillText("XMotorbike",15,100);  
+    //ctx.strokeText("JavaScript",15,160); 
 
-    ctx.fillStyle = "black";
+    ctx.fillStyle = "#7b441d";          // ground color
     ctx.beginPath();
     ctx.moveTo(0, c.height);
     for (let i = 0; i <  c.width; i++){
