@@ -36,7 +36,7 @@ let player = new function(){
             this.ySpeed += 0.1;         //gravity
         }else{
             //this.ySpeed = 0;          // free fall
-            this.ySpeed -= this.y - (p1-15); // reflection effect,  wheel traction
+            this.ySpeed -= this.y - (p1-16); // reflection effect,  wheel traction  // was 14.4
             this.y = p1 - 15;           // moving on the ground- stop gravity
             grounded = 1;
         }
@@ -75,9 +75,15 @@ let playing = true;
 let k = {ArrowUp:0, ArrowDown:0, ArrowLeft:0, ArrowRight:0};
 function loop(){
     speed -= (speed - (k.ArrowUp - k.ArrowDown)) * 0.01;
-    t += 10 * speed;             //time
+    t += 7 * speed;             //time   //was 10
     ctx.fillStyle = "#19f";     
     ctx.fillRect(0, 0, c.width, c.height); // drawing frame
+   
+    
+    ctx.font = "50pt Calibri"; // styl tekstu
+    ctx.fillStyle = "gray"; // ustawienie koloru tekstu
+    ctx.fillText("JavaScript",15,100); // narysowanie tekstu
+    //ctx.strokeText("JavaScript",15,160); // wyświetlenie tekstu
 
     ctx.fillStyle = "black";
     ctx.beginPath();
