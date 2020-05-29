@@ -1,11 +1,13 @@
-// add renew player from place where player creshed
+// add renew player from place where player creshed //maybe not
+//need to add turbo  //maybe not
+// turbo for full rotation above the ground //maybe not
 // add flag of start
-// add flag of finish
-//need to add turbo
-// turbo for full rotation above the ground
+// add flag of finish 24km
 // need to see meters to finish or time
 //add best time score
 //add start on the ground
+// go as far a you can and rotate as many you can
+// add flag where last time finished
 
 
 let c = document.createElement("canvas");
@@ -33,7 +35,7 @@ let player = new function(){
     this.ySpeed = 0;        //gravity
     this.rot = 0;
     this.rSpeed = 0;
-    this.turboScore = 0;
+    this.score = 0;
 
     this.img = new Image();
     this.img.src = "motorbike_racing.png";
@@ -54,7 +56,7 @@ let player = new function(){
             playing =false;
             this.rSpeed = 5;
             k.ArrowUp = 0;
-            speed = 0;    
+            speed = 0;     
         }
         
         let angle = Math.atan2((p2-15) - this.y, (this.x +5) - this.x);  //atan2 -> 2-argument arctangent in radians
@@ -69,12 +71,13 @@ let player = new function(){
         this.rot -= this.rSpeed * 0.05;                        
         if((this.rot > Math.PI) && playing) {
             this.rot = -Math.PI;
-            this.turboScore++}       //landing after forward rotation
+            this.score++}       //landing after forward rotation
         if((this.rot < -Math.PI) && playing) {
             this.rot = Math.PI; 
-            this.turboScore++}        //landing after backward rotation
+            this.score++}        //landing after backward rotation
         ctx.save();
-        ctx.strokeText(this.turboScore,15,160); 
+        ctx.strokeText( ( t / 1000).toFixed(2) + ' km',15,150);     //drawing position
+        ctx.strokeText(this.score,15,200);              //drawing score
         ctx.translate(this.x, this.y);
         ctx.rotate(this.rot);
         ctx.drawImage(this.img, -15, -15, 30 , 30);
@@ -88,19 +91,19 @@ let playing = true;
 let k = {ArrowUp:0, ArrowDown:0, ArrowLeft:0, ArrowRight:0};
 function loop(){
     speed -= (speed - (k.ArrowUp - k.ArrowDown)) * 0.01;
-    t += 7 * speed;             //time   
+    t += 7 * speed;             //position   
     ctx.fillStyle = "#19f";     
     ctx.fillRect(0, 0, c.width, c.height); // drawing frame
    
     
     ctx.font = "50pt Calibri";          
     ctx.fillStyle = "gray";            
-    ctx.fillText("XMotorbike",15,100);  
+    ctx.fillText("XMotorbike",15,60);  
 
     ctx.fillStyle = "#7b441d";          // ground color
     ctx.beginPath();
     ctx.moveTo(0, c.height);
-    for (let i = 0; i <  c.width; i++){
+    for (let i = 0; i <  c.width; i++){         //drawing ground
         ctx.lineTo(i, c.height - noise(t + i) * 0.25);
     }
 
