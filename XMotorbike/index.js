@@ -1,6 +1,3 @@
-// add renew player from place where player creshed //maybe not
-//need to add turbo  //maybe not
-// turbo for full rotation above the ground //maybe not
 // add flag of start
 // add flag of finish 25km
 // need to see meters to finish or time
@@ -10,7 +7,6 @@
 // add flag where last time finished
 let soundEngine = new Audio("sounds/harley.mp3");
         
-
 let c = document.createElement("canvas");
 let ctx = c.getContext("2d");
 c.width = window.innerWidth-20;
@@ -19,22 +15,7 @@ document.body.appendChild(c);
 
 let perm = [];
 
-function drawingRandomGround(perm){
-    while (perm.length < 255){
-        while(perm.includes(val = 2.2*Math.floor(Math.random()*255)));    // drawing random ground, can manipulate hight of the ground
-        perm.push(val); 
-    }
-}
-drawingRandomGround(perm);
-
-
-let lerp = (a,b,t) => a+(b-a) * (1-Math.cos(t*Math.PI))/2;      //antialiasing
-
-
-let noise = x =>{                                
-    x = x * 0.01 % 255;
-    return lerp(perm[Math.floor(x)], perm[Math.ceil(x)], x - Math.floor(x));
-}
+randomNumbersInArray();
 
 let player = new function(){
     this.x = c.width/2;
@@ -43,9 +24,9 @@ let player = new function(){
     this.rot = 0;
     this.rSpeed = 0;
     this.score = 0;
-
     this.img = new Image();
     this.img.src = "img/motorbike_racing.png";
+    
     this.draw = function(){
         let p1 = c.height - noise(t + this.x) * 0.25;
         let p2 = c.height - noise(t + 5 + this.x) * 0.25;
@@ -96,6 +77,47 @@ let t = 0;
 let speed = 0;
 let playing = true;
 let k = {ArrowUp:0, ArrowDown:0, ArrowLeft:0, ArrowRight:0};
+
+onkeydown = d => k[d.key] = 0.7;        
+onkeyup = d => k[d.key] = 0;
+loop();
+
+
+
+
+
+
+function randomNumbersInArray(){       // random numbers to determine the hight of the ground
+   
+    while (perm.length < 255){
+        while(perm.includes(val = 2.2*Math.floor(Math.random()*255)));    
+        perm.push(val); 
+    }
+}
+
+function noise(x){                     //base for the ground                   
+    x = x * 0.01 % 255;
+    return lerp(perm[Math.floor(x)], perm[Math.ceil(x)], x - Math.floor(x));
+}
+
+function lerp(a,b,t){           //rectangles            
+    return a+(b-a) * antialiasing(t);
+}
+
+function antialiasing(t){
+    return (1-Math.cos(t*Math.PI))/2
+}
+
+
+//let lerp = (a,b,t) => a+(b-a) * (1-Math.cos(t*Math.PI))/2;      //antialiasing
+
+/*
+let noise = x =>{                                
+    x = x * 0.01 % 255;
+    return lerp(perm[Math.floor(x)], perm[Math.ceil(x)], x - Math.floor(x));
+}
+*/
+
 function loop(){
     speed -= (speed - (k.ArrowUp - k.ArrowDown)) * 0.01;
     
@@ -123,7 +145,3 @@ function loop(){
     player.draw();
     requestAnimationFrame(loop);
 } 
-onkeydown = d => k[d.key] = 0.7;        
-onkeyup = d => k[d.key] = 0;
-
-loop();
