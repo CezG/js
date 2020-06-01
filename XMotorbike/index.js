@@ -28,11 +28,11 @@ let player = new function(){
     this.img.src = "img/motorbike_racing.png";
     
     this.draw = function(){
+        let grounded = 0;
+     
         let p1 = c.height - noise(t + this.x) * 0.25;
         let p2 = c.height - noise(t + 5 + this.x) * 0.25;
         
-
-        let grounded = 0;
         if(p1 - 15 > this.y){
             this.ySpeed += 0.1;                 //gravity
         }else{
@@ -41,7 +41,8 @@ let player = new function(){
             grounded = 1;
         }
 
-        
+        this.y += this.ySpeed;                      //falling
+
         if(!playing || grounded && Math.abs(this.rot) > Math.PI * 0.5){
             playing =false;
             this.rSpeed = 5;
@@ -49,13 +50,10 @@ let player = new function(){
             speed = 0;
             deathDance.play(); 
         }
-        
-        let angle = Math.atan2((p2-15) - this.y, (this.x +5) - this.x);  //atan2 -> 2-argument arctangent in radians
-        this.y += this.ySpeed;                      //falling
-        
+
         if(grounded && playing){
-            this.rot -= (this.rot - angle) * 0.5;   //angle of the player moving on the ground
-            //this.rSpeed = this. rSpeed - (angle - this.rot);
+            this.rot -= (this.rot - angle(p2,this.y,this.x)) * 0.5;   //angle of the player moving on the ground
+            //this.rSpeed = this. rSpeed - (angle - this.rot);      // to be removed on finish 
             this.rSpeed = 0;                        //better for playing
         }
         this.rSpeed += (k.ArrowLeft - k.ArrowRight) * 0.06;     // left and right rotation
@@ -64,9 +62,11 @@ let player = new function(){
         if((this.rot > Math.PI) && playing) {
             this.rot = -Math.PI;
             this.score++}       //landing after forward rotation
+        
         if((this.rot < -Math.PI) && playing) {
             this.rot = Math.PI; 
             this.score++}        //landing after backward rotation
+            
         ctx.save();
         ctx.strokeText( ( t / 1000).toFixed(2) + ' km',15,150);     //drawing position
         ctx.strokeText(this.score,15,200);              //drawing score
@@ -77,6 +77,7 @@ let player = new function(){
     }
 } 
 
+
 let t = 0;
 let speed = 0;
 let playing = true;
@@ -86,6 +87,7 @@ onkeydown = d => k[d.key] = 0.7;
 onkeyup = d => k[d.key] = 0;
 
 loop();
+
 
 
 function loop(){   
@@ -119,10 +121,10 @@ function backgroundColor(col){
 }
 
 function drawGround(){
-    ctx.fillStyle = "#7b441d";          // ground color
+    ctx.fillStyle = "#7b441d";          
     ctx.beginPath();
     ctx.moveTo(0, c.height);
-    for (let i = 0; i <  c.width; i++){         //drawing ground
+    for (let i = 0; i <  c.width; i++){         
         ctx.lineTo(i, c.height - noise(t + i) * 0.25);
     }
 
@@ -157,3 +159,7 @@ function lerp(a,b,t){           //rectangles
 function antialiasing(t){
     return (1-Math.cos(t*Math.PI))/2
 }
+
+function angle(p2,y,x){
+    return Math.atan2((p2-15) - y, (x +5) - x);  //atan2 -> 2-argument arctangent in radians
+ }
