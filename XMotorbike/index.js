@@ -6,6 +6,7 @@
 // go as far a you can and rotate as many you can
 // add flag where last time finished
 let soundEngine = new Audio("sounds/harley.mp3");
+let deathDance = new Audio("video/coffinDance.mp4");
         
 let c = document.createElement("canvas");
 let ctx = c.getContext("2d");
@@ -14,7 +15,6 @@ c.height = window.innerHeight-20;
 document.body.appendChild(c);
 
 let perm = [];
-
 randomNumbersInArray();
 
 let player = new function(){
@@ -31,6 +31,7 @@ let player = new function(){
         let p1 = c.height - noise(t + this.x) * 0.25;
         let p2 = c.height - noise(t + 5 + this.x) * 0.25;
         
+
         let grounded = 0;
         if(p1 - 15 > this.y){
             this.ySpeed += 0.1;                 //gravity
@@ -40,11 +41,13 @@ let player = new function(){
             grounded = 1;
         }
 
+        
         if(!playing || grounded && Math.abs(this.rot) > Math.PI * 0.5){
             playing =false;
             this.rSpeed = 5;
             k.ArrowUp = 0;
-            speed = 0;     
+            speed = 0;
+            deathDance.play(); 
         }
         
         let angle = Math.atan2((p2-15) - this.y, (this.x +5) - this.x);  //atan2 -> 2-argument arctangent in radians
@@ -56,6 +59,7 @@ let player = new function(){
             this.rSpeed = 0;                        //better for playing
         }
         this.rSpeed += (k.ArrowLeft - k.ArrowRight) * 0.06;     // left and right rotation
+        
         this.rot -= this.rSpeed * 0.05;                        
         if((this.rot > Math.PI) && playing) {
             this.rot = -Math.PI;
@@ -76,19 +80,65 @@ let player = new function(){
 let t = 0;
 let speed = 0;
 let playing = true;
-let k = {ArrowUp:0, ArrowDown:0, ArrowLeft:0, ArrowRight:0};
 
+let k = {ArrowUp:0, ArrowDown:0, ArrowLeft:0, ArrowRight:0};
 onkeydown = d => k[d.key] = 0.7;        
 onkeyup = d => k[d.key] = 0;
+
 loop();
 
 
+function loop(){   
+    controlSpeed();
+    playSaundEngine(speed);
+    position();
+    backgroundColor("#19f");   
+    drawText("XMotorbike","gray","50pt Calibri", 15, 60 );
+    drawGround();
+    player.draw();
+    requestAnimationFrame(loop);
+} 
 
 
+function controlSpeed(){
+    speed -= (speed - (k.ArrowUp - k.ArrowDown)) * 0.01;
+}
+
+function position(){
+    t += 7 * speed;                
+}
+
+function playSaundEngine(speed){
+    if(speed>0)soundEngine.play();
+    if(speed<=0)soundEngine.pause();
+} 
+
+function backgroundColor(col){
+    ctx.fillStyle = col; 
+    ctx.fillRect(0, 0, c.width, c.height); // drawing frame    
+}
+
+function drawGround(){
+    ctx.fillStyle = "#7b441d";          // ground color
+    ctx.beginPath();
+    ctx.moveTo(0, c.height);
+    for (let i = 0; i <  c.width; i++){         //drawing ground
+        ctx.lineTo(i, c.height - noise(t + i) * 0.25);
+    }
+
+    ctx.lineTo(c.width, c.height);
+    ctx.fill();
+}
+
+function drawText(txt,color, font , positionX, positionY){
+    ctx.font = font;          
+    ctx.fillStyle = color;            
+    ctx.fillText(txt, positionX, positionY);  
+
+}
 
 
 function randomNumbersInArray(){       // random numbers to determine the hight of the ground
-   
     while (perm.length < 255){
         while(perm.includes(val = 2.2*Math.floor(Math.random()*255)));    
         perm.push(val); 
@@ -107,41 +157,3 @@ function lerp(a,b,t){           //rectangles
 function antialiasing(t){
     return (1-Math.cos(t*Math.PI))/2
 }
-
-
-//let lerp = (a,b,t) => a+(b-a) * (1-Math.cos(t*Math.PI))/2;      //antialiasing
-
-/*
-let noise = x =>{                                
-    x = x * 0.01 % 255;
-    return lerp(perm[Math.floor(x)], perm[Math.ceil(x)], x - Math.floor(x));
-}
-*/
-
-function loop(){
-    speed -= (speed - (k.ArrowUp - k.ArrowDown)) * 0.01;
-    
-    if(speed>0)soundEngine.play();
-    if(speed<=0)soundEngine.pause();
-    
-    t += 7 * speed;             //position   
-    ctx.fillStyle = "#19f";     
-    ctx.fillRect(0, 0, c.width, c.height); // drawing frame
-   
-    
-    ctx.font = "50pt Calibri";          
-    ctx.fillStyle = "gray";            
-    ctx.fillText("XMotorbike",15,60);  
-
-    ctx.fillStyle = "#7b441d";          // ground color
-    ctx.beginPath();
-    ctx.moveTo(0, c.height);
-    for (let i = 0; i <  c.width; i++){         //drawing ground
-        ctx.lineTo(i, c.height - noise(t + i) * 0.25);
-    }
-
-    ctx.lineTo(c.width, c.height);
-    ctx.fill();
-    player.draw();
-    requestAnimationFrame(loop);
-} 
