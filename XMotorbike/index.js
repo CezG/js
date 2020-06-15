@@ -14,8 +14,16 @@ c.width = window.innerWidth-20;
 c.height = window.innerHeight-20;
 document.body.appendChild(c);
 
+let t = 0;
+let speed = 0;
+let playing = true;
+let metersToFinish =25500;
+let k = {ArrowUp:0, ArrowDown:0, ArrowLeft:0, ArrowRight:0};
+
 let perm = [];
 randomNumbersInArray();
+
+
 
 let player = new function(){
     this.x = c.width/2;
@@ -26,6 +34,8 @@ let player = new function(){
     this.score = 0;
     this.img = new Image();
     this.img.src = "img/motorbike_racing.png";
+    this.imgFlag = new Image();
+    this.imgFlag.src = "img/finish flag.png";
     
     this.draw = function(){
         let grounded = 0;
@@ -40,24 +50,29 @@ let player = new function(){
             this.y = p1 - 15;                   // moving on the ground- stop gravity
             grounded = 1;
         }
-
+        
         this.y += this.ySpeed;                      //falling
-
+        
         if(!playing || grounded && Math.abs(this.rot) > Math.PI * 0.5){
             playing =false;
             this.rSpeed = 5;
             k.ArrowUp = 0;
             speed = 0;
+            // zapisz wynik
+            // pokaż wynik po paru sekundach i zapytaj czy ponownie zagrać
+            
             deathDance.play(); 
         }
 
         if(grounded && playing){
-            this.rot -= (this.rot - angle(p2,this.y,this.x)) * 0.5;   //angle of the player moving on the ground
-            //this.rSpeed = this. rSpeed - (angle - this.rot);      // to be removed on finish 
-            this.rSpeed = 0;                        //better for playing
+            this.rot -= (this.rot - angle(p2,this.y,this.x)) * 0.5;   //angle of the player moving on the ground 
+            this.rSpeed = 0;                                        //stop rotate
         }
+ 
+        stopMovingBackwardsInAir(grounded, playing, k.ArrowDown);
+
         this.rSpeed += (k.ArrowLeft - k.ArrowRight) * 0.06;     // left and right rotation
-        
+
         this.rot -= this.rSpeed * 0.05;                        
         if((this.rot > Math.PI) && playing) {
             this.rot = -Math.PI;
@@ -68,27 +83,20 @@ let player = new function(){
             this.score++}        //landing after backward rotation
             
         ctx.save();
-        ctx.strokeText( ( t / 1000).toFixed(2) + ' km',15,150);     //drawing position
-        ctx.strokeText(this.score,15,200);              //drawing score
-        ctx.translate(this.x, this.y);
-        ctx.rotate(this.rot);
+        drawPosition(t); 
+        drawFlag(t,this.imgFlag,noise(metersToFinish ),this.y);   
+        drawScore(this.score);
+        motorbikePosition(this.x, this.y);
+        rotateMotorbike(this.rot);
         ctx.drawImage(this.img, -15, -15, 30 , 30);
         ctx.restore();
     }
 } 
 
 
-let t = 0;
-let speed = 0;
-let playing = true;
-
-let k = {ArrowUp:0, ArrowDown:0, ArrowLeft:0, ArrowRight:0};
 onkeydown = d => k[d.key] = 0.7;        
 onkeyup = d => k[d.key] = 0;
-
 loop();
-
-
 
 function loop(){   
     controlSpeed();
@@ -96,9 +104,10 @@ function loop(){
     position();
     backgroundColor("#19f");   
     drawText("XMotorbike","gray","50pt Calibri", 15, 60 );
-    drawGround();
+    drawGround(); 
     player.draw();
     requestAnimationFrame(loop);
+    
 } 
 
 
@@ -113,7 +122,13 @@ function position(){
 function playSaundEngine(speed){
     if(speed>0)soundEngine.play();
     if(speed<=0)soundEngine.pause();
-} 
+}
+
+function stopMovingBackwardsInAir(grounded, playing, k){
+    if (!grounded && playing){          
+        k.ArrowDown = 0;
+    }
+}
 
 function backgroundColor(col){
     ctx.fillStyle = col; 
@@ -130,6 +145,15 @@ function drawGround(){
 
     ctx.lineTo(c.width, c.height);
     ctx.fill();
+    
+}
+function drawFlag(t,imgFlag,x,y){
+    if(t>metersToFinish){
+        ctx.drawImage(imgFlag, x, y, 30 , 30);
+        console.log(x,y);
+        console.log(perm);
+    } 
+    
 }
 
 function drawText(txt,color, font , positionX, positionY){
@@ -138,6 +162,23 @@ function drawText(txt,color, font , positionX, positionY){
     ctx.fillText(txt, positionX, positionY);  
 
 }
+
+function drawPosition(t){
+    ctx.strokeText( ( t / 1000 - metersToFinish/1000).toFixed(2) + ' km',15,150);
+}
+
+function drawScore(score){
+    ctx.strokeText(score,15,200);
+}
+
+function motorbikePosition(x,y){
+    ctx.translate(x, y);
+}
+
+function rotateMotorbike(rot){
+    ctx.rotate(rot);
+}
+//function roadEnd(positionX)
 
 
 function randomNumbersInArray(){       // random numbers to determine the hight of the ground
