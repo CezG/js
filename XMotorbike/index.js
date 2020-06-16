@@ -17,7 +17,7 @@ document.body.appendChild(c);
 let t = 0;
 let speed = 0;
 let playing = true;
-let metersToFinish =25500;
+let metersToFinish =1000;  //25500
 let k = {ArrowUp:0, ArrowDown:0, ArrowLeft:0, ArrowRight:0};
 
 let perm = [];
@@ -84,7 +84,8 @@ let player = new function(){
             
         ctx.save();
         drawPosition(t); 
-        drawFlag(t,this.imgFlag,noise(metersToFinish ),this.y);   
+        //drawFlag(t,this.imgFlag,noise(metersToFinish ),this.y,c);   
+        drawFlag(t,this.imgFlag,this.x,this.y,c);   
         drawScore(this.score);
         motorbikePosition(this.x, this.y);
         rotateMotorbike(this.rot);
@@ -147,12 +148,14 @@ function drawGround(){
     ctx.fill();
     
 }
-function drawFlag(t,imgFlag,x,y){
-    if(t>metersToFinish){
+function drawFlag(t,imgFlag,x,y,c){
+    x=x-t+metersToFinish
+    //if(t>metersToFinish){
+        //ctx.drawImage(imgFlag, x +c.width/2, y, 30 , 30);
         ctx.drawImage(imgFlag, x, y, 30 , 30);
         console.log(x,y);
         console.log(perm);
-    } 
+    //} 
     
 }
 
