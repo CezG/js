@@ -1,5 +1,3 @@
-// add flag of start
-// need to see meters to finish or time
 //add best time score
 
 let c = document.createElement("canvas");
@@ -7,35 +5,40 @@ let ctx = c.getContext("2d");
 c.width = window.innerWidth-20;
 c.height = window.innerHeight-20;
 document.body.appendChild(c);
+localStorage.setItem("score",0);
 
 
 //MENU
-var myButton = document.querySelector('button');
-var myHaeading = document.querySelector('h1');
+let buttonPlayGame = document.getElementById("startGame");
+let buttonPlayer = document.getElementById("setPlayer");
+let myHaeading = document.querySelector('h1');
+let myHaeading2 = document.querySelector('h2');
 
 function setUserName(){
-    var myName = prompt('Enter your name');
+    let myName = prompt('Enter your name');
     localStorage.setItem('name',myName);
 }
 
-if(!localStorage.getItem('name')){
+buttonPlayer.onclick = function(){
     setUserName();
-} else {
-    var storedName = localStorage.getItem('name');
+    let storedName = localStorage.getItem('name');
     myHaeading.textContent='Welcome ' + storedName + ' in XMotorbike game. Have fun.' ;
+    
 }
 
-
-
-myButton.onclick = function(){
-    //setUserName();
+buttonPlayGame.onclick = function(){
     ctx.clearRect(0, 0, c.width, c.height);
+    document.getElementById('controls').style.display="none";
     gameXMotorbike();
+    
 }
 
 
 function gameXMotorbike(){
     let soundEngine = new Audio("sounds/harley.mp3");
+    let soundEngineHighSpeed = new Audio("sounds/harleyHighSpeed.mp3");
+    let soundEngineLowSpeed = new Audio("sounds/harleyLowSpeed.mp3");
+    let soundRotate = new Audio("sounds/soundRotate.mp3");
     let deathDanceMusic = new Audio("video/coffinDance.mp4");
     let bravoSound = new Audio("sounds/bravo.mp3");
 
@@ -44,7 +47,7 @@ function gameXMotorbike(){
     let playing = true;
     let playGame =true;
     let timeOut=700 ;
-    let metersToFinish =800;  //25500
+    let metersToFinish =2000;  //25500
     let k = {ArrowUp:0, ArrowDown:0, ArrowLeft:0, ArrowRight:0};
     let perm = [];
     randomNumbersInArray();
@@ -79,14 +82,17 @@ function gameXMotorbike(){
             this.y += this.ySpeed;                      //falling
             
             if(!playing || grounded && Math.abs(this.rot) > Math.PI * 0.5){
+                this.score =0;
                 playing =false;
                 this.rSpeed = 5;
                 k.ArrowUp = 0;
                 speed = 0;
-                // zapisz wynik
-                // pokaż wynik po paru sekundach i zapytaj czy ponownie zagrać
-                
                 deathDanceMusic.play(); 
+                soundEngineLowSpeed.pause();
+                soundEngineHighSpeed.pause();
+                setTimeout(()=>{
+                    document.getElementById('controls').style.display="block"},
+                    timeOut+3000);
             }
 
             if(grounded && playing){
@@ -101,16 +107,20 @@ function gameXMotorbike(){
             this.rot -= this.rSpeed * 0.05;                        
             if((this.rot > Math.PI) && playing) {
                 this.rot = -Math.PI;
+                soundRotate.loop= false;
+                soundRotate.play();
                 this.score++}       //landing after forward rotation
             
             if((this.rot < -Math.PI) && playing) {
                 this.rot = Math.PI; 
+                soundRotate.loop= false;
+                soundRotate.play();
                 this.score++}        //landing after backward rotation
                 
             ctx.save();
             drawPosition(t);    
             drawFlag(t,this.imgFlag,this.x,c); 
-            roadEnd(this.x,t,c),this.score;  
+            roadEnd(this.x,t,c,this.score);  
             drawScore(this.score);
             motorbikePosition(this.x, this.y);
             rotateMotorbike(this.rot);
@@ -136,9 +146,7 @@ function gameXMotorbike(){
         if(playGame){
             requestAnimationFrame(loop);
         }else{
-            document.getElementById('controls').style.display="block";
-            //document.querySelector('h1').textContent = score;        
-            //ctx.clearRect(0, 0, c.width, c.height);
+            document.getElementById('controls').style.display="block";       
         }
             
     } 
@@ -152,8 +160,19 @@ function gameXMotorbike(){
     }
 
     function playSaundEngine(speed){
-        if(speed>0)soundEngine.play();
-        if(speed<=0)soundEngine.pause();
+        
+        soundEngineHighSpeed.volume=0.1;
+        soundEngineLowSpeed.volume=0.1;
+    
+        if((speed < 0.2 || speed > -0.2) && speed !=0 ){
+           
+            soundEngineHighSpeed.pause();
+            soundEngineLowSpeed.play();
+        }
+        if(speed >=0.2 || speed <= -0.2){
+            soundEngineLowSpeed.pause();
+            soundEngineHighSpeed.play();
+        }
     }
 
     function stopMovingBackwardsInAir(grounded, playing, k){
@@ -184,19 +203,38 @@ function gameXMotorbike(){
         ctx.drawImage(imgFlag, x, y, 30 , 30);  
     }
 
-    function roadEnd(x,t,c){
+    function roadEnd(x,t,c,score){
         xRoad=x-t+metersToFinish
         if(xRoad < x){
+            soundEngineHighSpeed.pause();
+            soundEngineLowSpeed.pause();
             drawText("Finish","black","50pt Calibri", c.width/2 - 75, c.height/2 );
+            checkScore(score);
             setTimeout(()=> {
                 bravoSound.play();
                 k.ArrowUp = 0;
                 speed = 0;
                 playGame = false;
+
             },timeOut);        
         }
     }
 
+    function checkScore(score){  
+        let lastScore =parseInt(localStorage.getItem("score"));
+        console.log(score);
+        console.log(lastScore);  
+
+        if(lastScore<=score){        // zamienić do int
+            myHaeading2.textContent= 'your score '+ score +' is the highest ';
+            setTimeout(()=>{
+                localStorage.setItem('score',score);
+         
+            },timeOut+1);      
+        }else{
+            myHaeading2.textContent= ' Someone was better and have ' + lastScore;
+        }
+    }
 
     function drawText(txt,color, font , positionX, positionY){
         ctx.font = font;          
@@ -210,18 +248,8 @@ function gameXMotorbike(){
 
     function drawScore(score){
         ctx.strokeText(score,15,200);
-        myHaeading.textContent= 'Your score is ' + score; 
-        localStorage.setItem('score',score);
-    }
-
-    function checkScore(score,reachFinishLine){
-        if(reachFinishLine){
-            let lastScore =localStorage.getItem('score');
-            if(lastScore<score){
-                myHaeading.textContent= 'Your score is '+ score +'the highest ';
-            }
-        }
-
+        let storedName = localStorage.getItem('name');
+        myHaeading.textContent= storedName +' your score is ' + score; 
     }
 
     function motorbikePosition(x,y){
