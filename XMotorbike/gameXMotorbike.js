@@ -23,19 +23,16 @@ buttonPlayer.onclick = function(){
     setUserName();
     let storedName = localStorage.getItem('name');
     myHaeading.textContent='Welcome ' + storedName + ' in XMotorbike game. Have fun.' ;
-    
 }
 
 buttonPlayGame.onclick = function(){
     ctx.clearRect(0, 0, c.width, c.height);
     document.getElementById('controls').style.display="none";
     gameXMotorbike();
-    
 }
 
-
+//GAME
 function gameXMotorbike(){
-    let soundEngine = new Audio("sounds/harley.mp3");
     let soundEngineHighSpeed = new Audio("sounds/harleyHighSpeed.mp3");
     let soundEngineLowSpeed = new Audio("sounds/harleyLowSpeed.mp3");
     let soundRotate = new Audio("sounds/soundRotate.mp3");
@@ -47,7 +44,7 @@ function gameXMotorbike(){
     let playing = true;
     let playGame =true;
     let timeOut=700 ;
-    let metersToFinish =2000;  //25500
+    let metersToFinish =8000;  //25500 
     let k = {ArrowUp:0, ArrowDown:0, ArrowLeft:0, ArrowRight:0};
     let perm = [];
     randomNumbersInArray();
@@ -133,7 +130,7 @@ function gameXMotorbike(){
     onkeydown = d => k[d.key] = 0.7;        
     onkeyup = d => k[d.key] = 0;
     loop();
-
+    
     function loop(){   
         controlSpeed();
         playSaundEngine(speed);
@@ -147,8 +144,7 @@ function gameXMotorbike(){
             requestAnimationFrame(loop);
         }else{
             document.getElementById('controls').style.display="block";       
-        }
-            
+        }       
     } 
 
     function controlSpeed(){
@@ -164,8 +160,7 @@ function gameXMotorbike(){
         soundEngineHighSpeed.volume=0.1;
         soundEngineLowSpeed.volume=0.1;
     
-        if((speed < 0.2 || speed > -0.2) && speed !=0 ){
-           
+        if((speed < 0.2 || speed > -0.2) && speed !=0 ){  
             soundEngineHighSpeed.pause();
             soundEngineLowSpeed.play();
         }
@@ -229,7 +224,6 @@ function gameXMotorbike(){
             myHaeading2.textContent= 'your score '+ score +' is the highest ';
             setTimeout(()=>{
                 localStorage.setItem('score',score);
-         
             },timeOut+1);      
         }else{
             myHaeading2.textContent= ' Someone was better and have ' + lastScore;
