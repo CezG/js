@@ -38,6 +38,7 @@ function gameXMotorbike(){
     let soundRotate = new Audio("sounds/soundRotate.mp3");
     let deathDanceMusic = new Audio("video/coffinDance.mp4");
     let bravoSound = new Audio("sounds/bravo.mp3");
+    
 
     let t = 0;
     let speed = 0;
